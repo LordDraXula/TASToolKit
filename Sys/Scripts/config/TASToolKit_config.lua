@@ -2,6 +2,10 @@ local TTK_config = {}
 
 -- enables [-7, 7] clamp instead of [0, 14]
 TTK_config.useNegativeStickInput = false
+
+-- uses R button instead of B button to drift when enabled
+TTK_config.useRbutton = false
+
 -- creates up to TTK_config.backupAmount amounts of backup files for your race-inputs while you are TASing
 -- set to 0 to disable backups
 TTK_config.backupAmount = 8

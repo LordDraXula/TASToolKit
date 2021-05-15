@@ -32,9 +32,8 @@ end
 
 function onScriptUpdate()
 	local currentFrame = core.getFrameOfInput()
-	if (prevFrame < currentFrame) then
-		updateData()
-	elseif (prevFrame > currentFrame) then
+	
+	if (prevFrame > currentFrame) or ((prevFrame + 3) < currentFrame) then
 		if (autoFace ~= nil) and (autoStick ~= nil) and (autoTrick ~= nil) then
 			local inputList = TTK_Lib.decodeRKGData(autoFace, TTK_Lib.ControllerInputTypeEnum.faceButton, {})
 			inputList = TTK_Lib.decodeRKGData(autoStick, TTK_Lib.ControllerInputTypeEnum.directionInput, inputList)
@@ -45,6 +44,8 @@ function onScriptUpdate()
 			
 			iteration = (iteration % config.backupAmount) + 1
 		end
+		updateData()
+	elseif (prevFrame < currentFrame) then
 		updateData()
 	end
 	

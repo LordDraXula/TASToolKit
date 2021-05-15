@@ -434,9 +434,14 @@ local function runInput(currentInput)
 		elseif verticalInput == 14 then SetMainStickY(205)
 		end
 	end
+	
+	local bString = "B"
+	if (config.useRbutton) then
+		bString = "R"
+	end
 
 	if aButton == 1 then PressButton("A") end
-	if bButton == 1 then PressButton("B") end
+	if bButton == 1 then PressButton(bString) end
 	if lButton == 1 then PressButton("L") end
 
 	if dPad == 1 then PressButton("D-Up")

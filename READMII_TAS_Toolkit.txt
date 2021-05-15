@@ -135,7 +135,7 @@ Executable Files:
 Autorun Files:
 (These are scripts that run at the start of the game)
 ~/Scripts/_TTK_Autosave.lua				--creates backup files from your current progress
-										--creates a ~/MKW_Inputs/_backup.csv file whenever a savestate *PRIOR* to the current frame is loaded
+										--creates a ~/MKW_Inputs/_backup.csv file whenever a savestate is loaded
 										--options for this can be set at ~/Sys/Scripts/config/TASToolKit_config.lua
 
 
