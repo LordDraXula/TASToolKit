@@ -1,0 +1,152 @@
+TTK_Lib (TAS ToolKit Lib) is the core functionality of TTK as contains the collection of functions used in several scripts.
+Since v2.0 this was refactored to be it's own function collection, so it can be accessed and reused for writing own scripts.
+
+This is for those, who are interessed in writed own scripts, provided with the functionalities of ghost/rkg data and input data handling.
+
+Following is a brief documentation on what functions TTK_Lib provides. There is also commented docu in the TTK_Lib.lua itself.
+
+
+To use TTK_Lib include the following lines in your script:
+
+package.path = GetScriptsDir() .. "MKW/TTK_Lib.lua"
+local TTK_Lib = require("TTK_Lib")
+
+
+Enum Constants:
+TTK_Lib.PlayerTypeEnum = {player = 0,
+						  ghost = 1}
+TTK_Lib.ControllerInputTypeEnum = {faceButton = 0,
+								   directionInput = 1,
+								   trickInput = 2}
+
+Are helper constants to be used for certain functions.
+
+
+Input encoding/decoding functions:
+
+function decodeFaceButton(byte) -> byte, byte, byte
+Decodes hexadecimal representation of a face button input into its seperal values
+Returns A, B, L in order, are technically bytes, but can be interpreted as boolean
+eg. local A, B, L = TTK_Lib.decodeFaceButton(0x03)
+
+function decodeDirectionInput(byte) -> byte, byte
+Decodes hexadecimal representation of stick inputs into its seperal values
+Returns horizontal and vertical input in order (range 0 to 0xE/0d14, 0x7 is neutral)
+eg. local hI, vI = TTK_Lib.decodeDirectionInput(0x77)
+
+function decodeTrickInput(byte) -> byte
+Decodes hexadecimal representation of trick inputs into its meaning
+Range 0 to 4 meaning (notPressed(0), Up, Down, Left, Right(4)) in order
+eg. local dPadInput = TTK_Lib.decodeTrickInput(0x10)
+
+function encodeFaceButton(byte, byte, byte, byte) -> byte
+Encodes hexadecimal representation from face button inputs
+Params are (aButton, bButton, lButton, prevMask) in order.
+PrevMask is the result of the previous encodeFaceButton() result. Use 0x0 on the first frame.
+eg.
+local encodedByte = TTK_Lib.encodeFaceButton(1, 1, 0, 0x0)
+local secondByte = TTK_Lib.encodeFaceButton(1, 0, 0, encodedByte)
+
+function encodeDirectionInput(byte, byte) -> byte
+Encodes hexadecimal representation from stick inputs
+Params are horizontal and vertical input in order.
+eg. local encodedByte = TTK_Lib.encodeDirectionInput(14, 7)
+
+function encodeTrickInput(byte) -> byte
+Encodes hexadecimal representation from dpad inputs
+Param is dpad input (lol)
+eg. local encodedByte = TTK_Lib.encodeTrickInput(0x2)
+
+
+
+Input-list encoding/decoding functions:
+
+function decodeRKGData(table(byte), TTK_Lib.ControllerInputTypeEnum, table([byte, byte, byte, byte, byte, byte])) -> table([byte, byte, byte, byte, byte, byte])
+Decodes an array of bytes into their input representation, adding up to or replacing the specified table.
+Param 1 is the raw hexadecimal representation of inputs.
+Param 2 is the type of the hexadecimal representation, meaning face button, stick input or dpad input.
+Param 3 is the table that the inputs are being added up to/replaced in.
+Returns a 2D table. Containing a list of {A, B, L, horizonal Stick, vertical Stick, dpad} in order.
+Order of operation:
+local table = TTK_Lib.decodeRKGData(data1, TTK_Lib.ControllerInputTypeEnum.faceButton, {})
+table = TTK_Lib.decodeRKGData(data2, TTK_Lib.ControllerInputTypeEnum.directionInput, table)
+table = TTK_Lib.decodeRKGData(data3, TTK_Lib.ControllerInputTypeEnum.trickInput, table)
+
+function readRawRKGData(TTK_Lib.PlayerTypeEnum, TTK_Lib.ControllerInputTypeEnum, table(byte)) -> table(byte)
+Reads RKG data from ingame RAM into an array of bytes.
+Param 1 specifies what data should be read. TTK_Lib.PlayerTypeEnum.player reads from the temporary stored player inputs up until the current frame. TTK_Lib.PlayerTypeEnum.ghost reads from the loaded ghost.
+Param 2 is the type of the hexadecimal representation, meaning face button, stick input or dpad input.
+Param 3 is the byte table that the data should be added up to. Can be empty.
+Returns a table of the read data at the specified location.
+Returns nil if the data couldn't be found
+eg. local usedStickInputs = TTK_Lib.readRawRKGData(TTK_Lib.PlayerTypeEnum.player, TTK_Lib.ControllerInputTypeEnum.directionInput, {}) -- reads the in the current race used stick inputs
+
+function readFullDecodedRKGData(TTK_Lib.PlayerTypeEnum) -> table([byte, byte, byte, byte, byte, byte])
+Combines the former two functions to read the full decoded data at the specified location.
+Param specifies what data should be read. TTK_Lib.PlayerTypeEnum.player reads from the temporary stored player inputs up until the current frame. TTK_Lib.PlayerTypeEnum.ghost reads from the loaded ghost.
+Returns a 2D table. Containing a list of {A, B, L, horizonal Stick, vertical Stick, dpad} in order.
+eg. local currentUsedInputs = TTK_Lib.readFullDecodedRKGData(TTK_Lib.PlayerTypeEnum.player) -- reads the in the current race used inputs
+
+function encodeRKGData(table([byte, byte, byte, byte, byte, byte])) -> table(byte), byte, byte, byte
+Encodes full rkg data from a 2D table containing a list of {A, B, L, horizonal Stick, vertical Stick, dpad} in order.
+Param is the specified 2D table.
+Return 1 is the hexadecimal representation of the encodes data
+Return 2 is the amount of byte tuples representing face button inputs in Return 1. (Read 2*returnValue entries from Return 1 to contain all face button input data)
+Return 3 is the amount of byte tuples representing stick inputs in Return 1.
+Return 4 is the amount of byte tuples representing dpad button inputs in Return 1.
+eg. local data, fbBytes, diBytes, tiBytes = TTK_Lib.encodeRKGData(currentUsedInputs)
+
+
+
+String and table(byte) tools:
+-these are made to save/load binary data using strings more efficiently
+
+function byteArrayToString(table(byte)) -> string
+Converts a table of bytes to a string using ASCII format.
+Param is the array of bytes.
+Returns an input-string containing the data.
+eg. local Hello = TTK_Lib.byteArrayToString({0x48,0x65,0x6C,0x6C,0x6F})
+
+function stringToByteArray(string) -> table(byte)
+Converts a string to a table of bytes using ASCII format.
+Param is the input-string.
+Returns an array of bytes containing the data.
+eg. local binaryData = TTK_Lib.stringToByteArray("Hello World!")
+
+
+
+Misc:
+
+function runInput({byte, byte, byte, byte, byte, byte})
+Sets the current input to what is specified in the param.
+Param is {A, B, L, horizonal Stick, vertical Stick, dpad} in order.
+eg. TTK_Lib.runInput({1,1,0,7,7,0})
+
+
+
+
+
+CSV_Handler:
+CSV_Handler is a different lib containing functions to read *.csv files containing MKW input data.
+This is made to easen textfile TASing as *.csv is a table format.
+
+To use TTK_Lib include the following lines in your script:
+
+package.path = GetScriptsDir() .. "MKW/CSV_Handler.lua"
+local csv_handler = require("CSV_Handler")
+
+
+function loadCSV(string) -> boolean, table([byte, byte, byte, byte, byte, byte])
+Reads the file specified in the parameter and returns its read table.
+Param is the string of the file path to the *.csv file.
+Return 1 is the boolean that shows weither the load was successful or not.
+Return 2 is the 2D table, containing a list of {A, B, L, horizonal Stick, vertical Stick, dpad} in order.
+eg. local runner_loaded, input_runner = csv_handler.loadCSV("runner.csv")
+
+function writeCSV(string, table([byte, byte, byte, byte, byte, byte])) -> byte
+Writes the 2D input table into the specified file.
+Param 1 is the string of the file path to the *.csv file.
+Param 2 is the 2D table, containing a list of {A, B, L, horizonal Stick, vertical Stick, dpad} in order.
+Returns a return result, comparable to an error number, can be ignored if not needed (0 is successful, 1 is failed)
+CAUTION: This will give an error whenever a different application, such as libre-office, has currently opened the specified file. Make sure to close that file there first.
+eg. csv_handler.writeCSV("runner.csv", input_runner)

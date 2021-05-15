@@ -1,0 +1,258 @@
+This is a compilation of multiple lua scripts for Swarejonge's custom LUA Dolphin Version.
+
+This includes scripts to run the players inputs using an input file and manipulate the racing ghost using an input file, effectively replacing TAS Code.
+There is also a script of storing the raw ghost data as both the ghost input file and the runners input file.
+
+TAS ToolKit Use Case:
+
+-TAS ToolKit (TTK) is made to eliminate the tedious process of having to finish races and use TAS Code to follow your ghost path until you can make an improvement
+-Allows textfile TASing
+-Includes autosave/backup feature
+-Comparison:
+	-> Cheatcode method: Have Ghost always saves code, use race instant finish code, restart race, use TAS Code
+	-> TTK method: Use MKW_TAS_save_progress script, load savestate to the beginning of the race
+
+
+How to use:
+-Download Swarejonge's custom LUA Dolphin Version
+-Merge this folder with the custom LUA Dolphin version, so that the folder "Sys/Scripts/" gets merged and "MKW_Inputs/" appears in your Dolphin Root Folder
+	-> IF THE "MKW_Inputs/" FOLDER DOES NOT EXIST, THE SCRIPTS WILL CEASE TO WORK
+	-> The filePath is exchangable in ~/Sys/Scripts/config/TASToolKit_config.lua
+-Run the Scripts with "Tools > Execute Script"
+
+
+-----------------------
+
+
+TTK Workflow:
+#Race-Setup:
+-Race against a ghost with the same vehicle combination
+-Make a savestate when the track is loaded and before your first input can be made
+
+#Textfile TASing:
+-Create an input textfile using the MKW_GHOST_store_inputs_runner script
+	->These inputs are stored in the path ~/MKW_Inputs/... starting from the Dolphin LUA rootfolder
+	->The input file controlling the player is called MKW_Player_inputs.csv and the one for the ghost is called MKW_Ghost_inputs.csv
+-Start the MKW_TAS_Toolkit script
+	->This causes your vehicle to follow the inputs described in MKW_Player_inputs.csv and temporarely overwrite the ghosts inputs with the inputs described in MKW_Ghost_inputs.csv
+-Make edits to the MKW_Player_inputs.csv to simulate the inputs you want to do
+-To make your ghost follow your current progress, copy everything in the MKW_Player_inputs.csv to the MKW_Ghost_inputs.csv and load your savestate made before the race starts
+-Both player and ghost should do the same inputs until the point you want to improve
+
+Tips:
+-MKW_TAS_Toolkit always refreshes when a savestate is used and is a cancelable script
+-In ~/MKW_Inputs/InputCollection/... are several predefined input-strings you can copy-pasta into your input file
+-*.CSV is a table format, you can use any table-editing software such as Excel to edit your inputs more effectively
+
+#Controller/TAS-Input TASing:
+-TAS normally as you progress through the stage
+-Use the MKW_TAS_save_progress script to save your current progress into MKW_Player_inputs.csv and even stores an corresponding *.rkg ghost file and copy your inputs into MKW_Ghost_inputs.csv
+-Load the savestate made before the race begins
+-Use the MKW_TAS_Toolkit script until the point where you want to continue/improve and then cancel the script
+
+Overall Tips:
+-If your focus is on improving certain parts, you don't need to reload the whole race, you can just load a savestate before the improvement is made and follow the steps above
+
+
+
+Credits:
+-Swarejonge for his custom Dolphin version
+-Star and Swarejonge for help with specific pointers in memory data
+-Malleo and TASPlasma for their previous input reader scripts
+-Kierio and Swarejonge for provided and updated MKW_core.lua and MKW_Pointers
+
+Using MKW_ghost_store_inputs_runner.lua WILL OVERWRITE BOTH RUNNER AND GHOST INPUT FILES. Prepare copies of them if you want to store inputs of a new ghost.
+
+-----------------------
+
+
+
+
+IMPORTANT: CSV Notation:
+
+A,B,L,horizontalInput,verticalInput,dPadInput
+
+
+A - is the A-button pressed (0 - no, 1 - yes)
+B - is the B-button pressed (0 - no, 1 - yes)
+L - is the L-button (item-button) pressed (0 - no, 1 - yes)
+horizontalInput - the value of the control-stick horizontally reaching from (0 to 14) / (-7 to 7)
+verticalInput - the value of the control-stick vertically reaching from (0 to 14) / (-7 to 7)
+dPadInput - the value of the dPad-buttons (0 - none, 1 - dUp, 2 - dDown, 3 - dLeft, 4 - dRight)
+
+
+- horizontalInput and verticalInput change according to the setting in ~/Sys/Scripts/config/TASToolKit_config.lua
+
+
+
+
+
+-----------------------
+
+File Directory:
+~/ Dolphin.exe (root folder)
+~/ MKW_Inputs
+   --/ MKW_Ghost_Inputs.csv
+   --/ MKW_Player_Inputs.csv
+   --/ InputCollection
+       --/ SignedStickValueClamp
+~/ Sys / Scripts
+		 --/ _TTK_Autosave.lua
+		 --/ MKW_GHOST_store_inputs.lua
+		 --/ MKW_GHOST_store_inputs_runner.lua
+		 --/ MKW_LUA_to_CSV.lua
+		 --/ MKW_TAS_save_progress.lua
+		 --/ MKW_TAS_save_RKG_from_csv.lua
+		 --/ MKW_TAS_Toolkit.lua
+		 --/ config
+			 --/ TASToolKit_config.lua
+		 --/ MKW
+			 --/ CSV_Handler.lua
+			 --/ MKW_core.lua
+			 --/ MKW_ghost_core.lua
+			 --/ MKW_Pointers.lua
+			 --/ MKW_RKG_saver.lua
+			 --/ TTK_Lib.lua
+~/...
+
+
+-----------------------
+
+Executable Files:
+~/Scripts/MKW_GHOST_store_inputs.lua 			--stores the ghosts input from the internal mkw memory into the ~/MKW_Ghost_Inputs.csv input file
+~/Scripts/MKW_GHOST_store_inputs_runner.lua 	--stores the ghosts input from the internal mkw memory into BOTH ~/MKW_Ghost_Inputs.csv AND ~/MKW_Player_Inputs.csv input files
+~/Scripts/MKW_LUA_to_CSV.lua					--copies the old ~/MKW_Inputs/MKW_Ghost_Inputs.lua to ~/MKW_Inputs/MKW_Ghost_Inputs.csv
+												--copies the old ~/MKW_Inputs/MKW_Player_Inputs.lua to ~/MKW_Inputs/MKW_Player_Inputs.csv
+~/Scripts/MKW_TAS_save_progress.lua				--saves your current driven Lap into ~/MKW_Player_Inputs.csv
+												--highly enables Controller/TAS-Input TASing, as your full progress is immediately saved
+												--Savestate compatible
+												--saves an MKW_Player_Inputs.rkg ghost file
+												--can create a copy of the rksys.dat save file with the saved MKW_Player_Inputs.rkg in it
+~/Scripts/MKW_TAS_save_RKG_from_csv.lua			--loads ~/MKW_Player_Inputs.csv and saves the input string into MKW_Player_Inputs.rkg and a copied rksys.dat save file
+~/Scripts/MKW_TAS_Toolkit.lua					--when loaded, uses ~/MKW_Ghost_Inputs.csv AND ~/MKW_Player_Inputs.csv input files to influence the runners and ghosts inputs, savestate compatible
+												--updates with reloading the files after using a savestate to go back to an earlier frame than the current one
+
+Autorun Files:
+(These are scripts that run at the start of the game)
+~/Scripts/_TTK_Autosave.lua				--creates backup files from your current progress
+										--creates a ~/MKW_Inputs/_backup.csv file whenever a savestate *PRIOR* to the current frame is loaded
+										--options for this can be set at ~/Sys/Scripts/config/TASToolKit_config.lua
+
+
+Helper Files:
+~/Scripts/MKW/CSV_Handler.lua			--handles the logic of *.csv input files
+~/Scripts/MKW/MKW_core.lua  			--latest MKW_core.lua version, current standard
+~/Scripts/MKW/MKW_ghost_core.lua  		--used for pointer finding in all ghost based lua scripts
+										--includes basic function to overwrite ghost data using an input list
+~/Scripts/MKW/Pointers.lua				--includes several pointers for usage
+~/Scripts/MKW/MKW_RKG_saver.lua			--callable for scripts for storing *.rkg files from an input-sequence
+~/Scripts/MKW/TTK_Lib.lua				--contains most of the logic of TAS ToolKit
+										--contains reusable function for the user
+~/Scripts/config/TASToolKit_config.lua	--has settings for user-preferences
+										--useNegativeStickInput causes the control-stick inputs to clamp at [-7, 7] instead of [0, 14]
+
+Input Files:
+~/MKW_Inputs/MKW_Ghost_Inputs.csv	--representates the inputs of the ghost
+~/MKW_Inputs/MKW_Player_Inputs.csv	--representates the inputs of the runner
+
+Input Collection Files:
+~/MKW_Inputs/InputCollection/...	--collection of several prepared input strings such as start slides or Auto-Spear turning
+
+
+
+-----------------------
+Former Test Files:
+~/Test_Scripts/TEST_MKW_GHOST_overwrite_data_copy.lua	--converts the ~/mkw_input_reader_ghost.lua input file into binary RKG data saved in the ~/mkw_input_reader_ghost_raw.rrkg file (Raw RKG, does not include header or checksum)
+														--made to compare converted inputs with the actual RKG file
+-----------------------
+Deprecated/Deleted Files:
+~/Scripts/MKW_ghost_overwrite.lua				--overwrite the ghost in the internal mkw memory using the ~/mkw_input_reader_ghost.lua input file, DOES NOT affect save data
+												--effectively replaced by MKW_TAS_Toolkit.lua
+~/Scripts/MKW_TAS_Toolkit_active_reload.lua		--when loaded, uses ~/mkw_input_reader_ghost.lua AND ~/mkw_input_reader_runner.lua input files to influence the runners and ghosts inputs, savestate compatible
+												--updates with changing the files in realtime, CAUSES HEAVY FRAMEDROPS, ONLY USE WHILE TASING
+												--effectively replaced by MKW_TAS_Toolkit.lua
+~/Scripts/MKW_TAS_Toolkit_copytoghost.lua		--copies the ~/mkw_input_reader_runner.lua to the ~/mkw_input_reader_ghost.lua
+												--changes invalid GCC-inputs to valid runs, to keep the ghost from desyncing, uses ~/input_mask.lua to do so
+												--no current use with the new wheel inputs code
+~/Scripts/MKW_TAS_Toolkit_input_writer.lua		--writes inputs made with Controller/TAS-Input into the ~/mkw_input_reader_runner.lua input file, saves file when script is canceled, savestate compatible
+												--keeps old inputs alive, if they are not overwritten, fills gaps between frames with the basic input of no button pressed
+												--effectively replaced by MKW_TAS_save_progress.lua
+~/Scripts/MKW_TAS_Toolkit_rewrite.lua			--rewrites the ~/MKW_Player_Inputs.lua input file to match the commentated frames
+												--can be run while MKW_TAS_Toolkit_active_reload is active, if you pause the game, start the script and then run the next frame
+												--removed due to the usage of CSV-files
+~/mkw_input_reader_ghost.lua					--representates the inputs of the ghost
+												--renamed
+~/mkw_input_reader_runner.lua					--representates the inputs of the runner
+												--renamed
+~/input_mask.lua								--collection of all input conversions for the GC controller
+												--useless with the deprication of ~/Scripts/MKW_TAS_Toolkit_copytoghost.lua
+~/MKW_Inputs/MKW_Ghost_Inputs.lua
+~/MKW_Inputs/MKW_Player_Inputs.lua
+
+
+-----------------------
+versions:
+
+v2.0
+-uses *.csv table format instead of *.lua textfile format
+-added ~/Scripts/_TTK_Autosave.lua for automatic backups
+-added ~/Scripts/MKW/TTK_Lib.lua to refactor the functions for script writers to use
+-added ~/Scripts/config/TASToolKit_config.lua config file for user-preferenced settings
+
+-changed ~/MKW_Inputs/MKW_Ghost_Inputs.lua to ~/MKW_Inputs/MKW_Ghost_Inputs.csv
+-changed ~/MKW_Inputs/MKW_Player_Inputs.lua to ~/MKW_Inputs/MKW_Player_Inputs.csv
+-added ~/Scripts/MKW/CSV_Handler.lua for the handling of *.csv files
+-added ~/Scripts/MKW_LUA_to_CSV.lua to save the old *.lua input files into *.csv format
+-added ~/Scripts/MKW/MKW_RKG_saver.lua to create *.rkg ghost files and modify rksys.dat save files
+-added ~/Scripts/MKW_TAS_save_RKG_from_csv.lua to create MKW_Player_Inputs.rkg ghost file and a modded copy of the rksys.dat save file from ~/MKW_Inputs/MKW_Player_Inputs.csv
+-updated ~/Scripts/MKW_TAS_save_progress.lua to also save an MKW_Player_Inputs.rkg ghost file and a modded copy of the rksys.dat save file
+
+v1.4
+-added ~/Scripts/MKW_TAS_save_progress.lua to replace ~/Scripts/MKW_TAS_Toolkit_input_writer.lua for Controller/TAS-Input TASing
+-renamed ~/mkw_input_reader_ghost.lua to ~/MKW_Ghost_Inputs.lua
+-renamed ~/mkw_input_reader_runner.lua to ~/MKW_Player_Inputs.lua
+-moved ~/MKW_Ghost_Inputs.lua and ~/MKW_Player_Inputs.lua to ~/MKW_Inputs/...
+-moved InputCollection to ~/MKW_Inputs/...
+-updated all scripts to match new path finding
+-removed ~/Scripts/MKW_TAS_Toolkit_copytoghost.lua
+-removed ~/Scripts/MKW_TAS_Toolkit_input_writer.lua
+-removed ~/input_mask.lua
+
+v1.3.1 by Swarejonge
+-changed script dependency paths to match the newest Dolphin LUA Core update
+
+v1.3
+-fixed ~/MKW_ghost_core.lua to actively replace the length of the ghost input size for each section
+-updated ~/Scripts/MKW_TAS_Toolkit.lua to replace the old ~/Scripts/MKW_TAS_Toolkit_active_reload.lua without lag issues
+-added ~/InputCollection/... files for prepared input strings
+-added ~/input_mask.lua for a collection of valid GCC-input conversions
+-added ~/Scripts/MKW_TAS_Toolkit_copytoghost.lua to convert the ~/mkw_input_reader_runner.lua to a synchonized ~/mkw_input_reader_ghost.lua
+-deleted ~/Scripts/MKW_TAS_Toolkit_active_reload.lua
+-changed directory from ~/Scripts/... to ~/Sys/Scripts/... to match the newest Dolphin LUA version
+	-this change does not apply to this READMII
+
+
+v1.2
+-fixed ~/MKW_ghost_core.lua RKG face button masking
+-fixed ~/Scripts/MKW_TAS_Toolkit.lua and ~/Scripts/MKW_TAS_Toolkit_active_reload.lua to not crash when frame does not exist
+-added ~/Scripts/MKW_TAS_Toolkit_rewrite.lua for a quality of life change
+-added ~/Test_Scripts/TEST_MKW_GHOST_overwrite_data_copy.lua to write raw RKG data into a file
+-not mentioned v1.1 changes:
+	-added ~/MKW_Pointers.lua for some global race data pointers__by Swarejonge
+	-updated ~/MKW_ghost_core.lua for ghost data pointers of other ISO-regions__by Swarejonge
+
+v1.1 
+-swapped position of horizontal and vertical inputs
+-updated ~/MKW_core.lua to match latest version__by Swarejonge 
+-updated ~/Scripts/MKW_GHOST_store_inputs.lua and ~/Scripts/MKW_GHOST_store_inputs_runner.lua to be able to convert *.RKG files corrupted by "Ghost always saves"-code
+-updated ~/MKW_ghost_core.lua to refactor the ghost overwriting function
+-updated ~/Scripts/MKW_TAS_Toolkit.lua and ~/Scripts/MKW_TAS_Toolkit_active_reload.lua:
+	-ghost and/or runner files will now only be read, if they are existing
+	-deleting the ~/mkw_input_reader_runner.lua will cause to only replace ghost in the memory, effectively replacing the deprecated ~/Scripts/MKW_ghost_overwrite.lua
+	-deleting the ~/mkw_input_reader_ghost.lua will cause to only the runner inputs to be run
+	-deleting both input files will effectively do nothing
+-updated ~/Scripts/MKW_TAS_Toolkit_active_reload.lua to surely only reload, when a savestate or new frame is loaded
+-added ~/Scripts/MKW_TAS_Toolkit_input_writer.lua as a new support for TASing with Controller/TAS-Input
+
+v1
+-initial release
