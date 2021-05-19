@@ -10,6 +10,9 @@ TTK_config.useRbutton = false
 -- set to 0 to disable backups
 TTK_config.backupAmount = 8
 
+-- uses defined char for csv row seperation
+TTK_config.csvSeperator = ','
+
 TTK_config.textFilePath = {
 	player = "MKW_Inputs/MKW_Player_Inputs.csv",
 	ghost = "MKW_Inputs/MKW_Ghost_Inputs.csv",
@@ -20,7 +23,7 @@ TTK_config.textFilePath = {
 -- if (createRKSYScopy): read originalRksysPath -> insert created rkg into download slot on license 1 -> save to rksysCopyFilePath
 TTK_config.saveProgress = {
 	rkgFilePath = "MKW_Inputs/MKW_Player_Inputs.rkg",
-	createRKSYScopy = true,
+	createRKSYScopy = false,
 	rksysCopyFilePath = "MKW_Inputs/rksys.dat",
 	originalRksysPath = "User/Wii/title/00010004/524d4345/data/rksys.dat"
 }

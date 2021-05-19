@@ -22,7 +22,14 @@ local function loadCSV(csvFileName)
 		end
 
 		for line in io.lines(csvFileName) do
-			local aB, bB, lB, hI, vI, dP = line:match("(%d*),(%d*),(%d*),%s*(.-),%s*(.-),(%d*)")
+			local matchString = "(%d*)%" .. config.csvSeperator ..
+								"(%d*)%" .. config.csvSeperator ..
+								"(%d*)%" .. config.csvSeperator ..
+								"(%-?%d+)%" .. config.csvSeperator ..
+								"(%-?%d+)%" .. config.csvSeperator ..
+								"(%d*)"
+			-- local aB, bB, lB, hI, vI, dP = line:match("(%d*)%,(%d*)%,(%d*)%,%s*(.-)%,%s*(.-)%,(%d*)")
+			local aB, bB, lB, hI, vI, dP = line:match(matchString)
 			hI = hI + subtractiveStick
 			vI = vI + subtractiveStick
 			inputList[#inputList + 1] = {tonumber(aB), tonumber(bB), tonumber(lB), hI, vI, tonumber(dP)}
@@ -53,7 +60,13 @@ local function writeCSV(csvFileName, inputTable)
 	end
 	
 	for _, inputs in ipairs(inputTable) do
-		local outputString = string.format("%u,%u,%u,%d,%d,%u\n", inputs[1], inputs[2], inputs[3],
+		local matchString = "%u" .. config.csvSeperator ..
+							"%u" .. config.csvSeperator ..
+							"%u" .. config.csvSeperator ..
+							"%d" .. config.csvSeperator ..
+							"%d"  .. config.csvSeperator ..
+							"%u\n"
+		local outputString = string.format(matchString, inputs[1], inputs[2], inputs[3],
 							inputs[4] + subtractiveStick, inputs[5] + subtractiveStick, inputs[6])
 		io.write(outputString)
 	end
