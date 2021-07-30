@@ -1,0 +1,53 @@
+PAL code description:
+
+## Starting Address: 801AA9BC
+
+loc_0x0:
+## Get buttons pressed
+  lis r12, 0x8034
+  ori r12, r12, 0xXXXX
+  lhz r12, 0(r12)
+## Set button activators
+  li r11, 0x[ZZZZ1]
+  li r5, 0x[ZZZZ2]
+  li r4, 0x[ZZZZ3]
+## Check for enabling TTK
+  and r0, r12, r11
+  cmpw r0, r11
+  beq- loc_enable
+## Check for disabling TTK
+  and r0, r12, r5
+  cmpw r0, r5
+  beq- loc_disable
+## Check for saving current progress
+  and r0, r12, r4
+  cmpw r0, r4
+  beq- loc_save_prog
+## None of the buttons were pressed > wait for next cycle
+  b loc_end
+
+## Set the byte for enabling TTK
+loc_enable:
+  lis r12, 0x8150
+  li r11, 0x1
+  b loc_store
+
+## Set the byte for disabling TTK
+loc_disable:
+  lis r12, 0x8150
+  li r11, 0x0
+
+## Store the enabling/disabling byte
+loc_store:
+  stb r11, 0x50(r12)
+  b loc_end
+  
+## Store the byte for saving progress
+loc_save_prog:
+  lis r12, 0x8150
+  li r11, 0x1
+  stb r11, 0x51(r12)
+
+## end of code, initial instruction
+loc_end:
+  mflr r0

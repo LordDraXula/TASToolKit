@@ -1,12 +1,3 @@
--- stores the ghost as both the runner file and the ghost file
-
--- IMPORTANT: you can only run this, if the track and ghost have been fully loaded
--- after that you can run the script any time you want, before the first inputs can be made or even midrace
-
--- WARNING: this will overwrite any changes you have made to your runner file, make sure to use the other one to only write onto the ghost
-
-
-
 
 function onScriptStart()
 	MsgBox("Script started.")
