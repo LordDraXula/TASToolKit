@@ -1,3 +1,5 @@
+-- stores the current race progress inputs into a file
+
 
 package.path = GetScriptsDir() .. "MKW/CSV_Handler.lua"
 local csv_handler = require("CSV_Handler")
@@ -27,7 +29,7 @@ function onScriptStart()
 		io.write(rkgString .. crc)
 	
 		if (config.saveProgress.createRKSYScopy) then
-			rkg_saver.storeDownloadedGhost(rkgString, config.saveProgress.originalRksysPath, config.saveProgress.rksysCopyFilePath)
+			rkg_saver.storeDownloadedGhost(rkgString, config.saveProgress.originalRksysPath, config.saveProgress.rksysFilePath)
 		end
 	end
 
