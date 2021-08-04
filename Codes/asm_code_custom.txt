@@ -1,17 +1,17 @@
-## PAL code description:
+PAL code description:
 
 ## Starting Address: 801AA9BC
 
 loc_start:
 ## Get buttons pressed
   lis r12, 0x8034
-  ori r12, r12, 0x1462
+  ori r12, r12, 0xXXXX
   lhz r12, 0(r12)
 ## Set Address
   lis r4, 0x8150
   
 ## Enable TTK
-  li r11, 0x0200
+  li r11, 0x[ZZZZ1]
   and r0, r12, r11
   cmpw r0, r11
   bne- loc_disable
@@ -19,9 +19,11 @@ loc_start:
   stb r11, 0x50(r4)
   b loc_end
   
+  
+  
 ## Disable TTK
 loc_disable:
-  li r11, 0x0100
+  li r11, 0x[ZZZZ2]
   and r0, r12, r11
   cmpw r0, r11
   bne- loc_saveprog_player
@@ -31,15 +33,7 @@ loc_disable:
   
 ## Save Progress
 loc_saveprog_player:
-
-## Check A-button press
-  li r11, 0x0800
-  and r0, r12, r11
-  cmpw r0, r11
-  bne- loc_storeghost_player
-  
-## Start Save Progress Combinations
-  li r11, 0x0801
+  li r11, 0x[ZZZZ3]
   and r0, r12, r11
   cmpw r0, r11
   bne- loc_saveprog_ghost
@@ -48,7 +42,7 @@ loc_saveprog_player:
   b loc_end
   
 loc_saveprog_ghost:
-  li r11, 0x0802
+  li r11, 0x[ZZZZ4]
   and r0, r12, r11
   cmpw r0, r11
   bne- loc_saveprog_both
@@ -57,7 +51,7 @@ loc_saveprog_ghost:
   b loc_end
 
 loc_saveprog_both:
-  li r11, 0x0808
+  li r11, 0x[ZZZZ5]
   and r0, r12, r11
   cmpw r0, r11
   bne- loc_storeghost_player
@@ -67,16 +61,7 @@ loc_saveprog_both:
 
 ## Store Ghost
 loc_storeghost_player:
-
-## Check B-button press
-  li r11, 0x0400
-  and r0, r12, r11
-  cmpw r0, r11
-  bne- loc_copyfrom_player
-  
-## Start Store-Ghost Combinations
-
-  li r11, 0x0401
+  li r11, 0x[ZZZZ6]
   and r0, r12, r11
   cmpw r0, r11
   bne- loc_storeghost_ghost
@@ -85,7 +70,7 @@ loc_storeghost_player:
   b loc_end
 
 loc_storeghost_ghost:
-  li r11, 0x0402
+  li r11, 0x[ZZZZ7]
   and r0, r12, r11
   cmpw r0, r11
   bne- loc_storeghost_both
@@ -94,7 +79,7 @@ loc_storeghost_ghost:
   b loc_end
   
 loc_storeghost_both:
-  li r11, 0x0408
+  li r11, 0x[ZZZZ8]
   and r0, r12, r11
   cmpw r0, r11
   bne- loc_copyfrom_player
@@ -104,16 +89,7 @@ loc_storeghost_both:
   
 ## Copy files
 loc_copyfrom_player:
-
-## Check Minus-button press
-  li r11, 0x1000
-  and r0, r12, r11
-  cmpw r0, r11
-  bne- loc_end
-  
-## Start Minus-button Combinations
-
-  li r11, 0x1001
+  li r11, 0x[ZZZZ9]
   and r0, r12, r11
   cmpw r0, r11
   bne- loc_copyfrom_ghost
@@ -122,7 +98,7 @@ loc_copyfrom_player:
   b loc_end
   
 loc_copyfrom_ghost:
-  li r11, 0x1002
+  li r11, 0x[ZZZZ10]
   and r0, r12, r11
   cmpw r0, r11
   bne- loc_tas_code
@@ -132,25 +108,16 @@ loc_copyfrom_ghost:
 
 ## Pseudo-TAS Code
 loc_tas_code:
-  li r11, 0x1008
-  and r0, r12, r11
-  cmpw r0, r11
-  bne- loc_disable_alt
-  li r11, 0x1
-  stb r11, 0x52(r4)
-  li r11, 0x1
-  stb r11, 0x50(r4)
-  b loc_end
-  
-loc_disable_alt:
-  li r11, 0x1004
+  li r11, 0x[ZZZZ11]
   and r0, r12, r11
   cmpw r0, r11
   bne- loc_end
-  li r11, 0x0
+  li r11, 0x1
+  stb r11, 0x52(r4)
+  li r11, 0x1
   stb r11, 0x50(r4)
   
 ## end of code, initial instruction
 loc_end:
   mflr r0
-
+  
