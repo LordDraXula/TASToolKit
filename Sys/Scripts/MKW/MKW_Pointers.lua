@@ -1,5 +1,16 @@
 local Pointers = {}
 
+local function getKMPBasePointer()
+  local kmpBase
+  if GetGameID() == "RMCP01" then kmpBase = 0x9BD6E8
+  elseif GetGameID() == "RMCE01"then kmpBase = 0x9B8F28
+  elseif GetGameID() == "RMCJ01" then kmpBase = 0x9BC748
+  elseif GetGameID() == "RMCK01" then kmpBase = 0x9ABD28
+  end
+  return GetPointerNormal(kmpBase, 0x4, 0x0)
+end
+Pointers.getKMPBasePointer = getKMPBasePointer
+
 local function getInputDataPointer()
   local inputData
   if GetGameID() == "RMCP01" then inputData = 0x9BD70C

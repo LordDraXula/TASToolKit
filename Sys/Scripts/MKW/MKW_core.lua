@@ -75,6 +75,28 @@ local function getInput()
 end
 core.getInput = getInput
 
+local function floatHack(intVal)
+  return string.unpack("f", string.pack("I4", intVal))
+end
+
+local function getFinishLine()
+  local kmpBase = Pointers.getKMPBasePointer()
+  local offset = ReadValue32(kmpBase, 0x24)
+  local resultList = {}
+  
+  for i = 0x0, 0xC, 0x4 do
+	resultList[#resultList + 1] = floatHack(ReadValue32(kmpBase, 0x4C + offset + 0x8 + i))
+  end
+  
+  return {
+    X1 = resultList[1],
+    Z1 = resultList[2],
+    X2 = resultList[3],
+    Z2 = resultList[4]
+  }
+end
+core.getFinishLine = getFinishLine
+
 local function PosToAngle()
   local Xspd = getSpd().X
   if getSpd().X == 0 then Xspd = math.pi / 2
