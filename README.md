@@ -1,6 +1,8 @@
 # TASToolKit
 LUA Script Repository for [Dolphin LUA](https://github.com/SwareJonge/Dolphin-Lua-Core) by [SwareJonge](https://github.com/SwareJonge).
 
+Check [TASToolKit Editor](https://github.com/malleoz/TASToolKitEditor) by [Malleo](https://github.com/malleoz) for a custom textfile editor regarding this toolkit.
+
 This is made to enhance Mario Kart Kart TASing using Textfile-TASing and other various scripts.
 TAS ToolKit (TTK) eliminates the tedious process of having to finish races and use TAS Code to follow your ghost path until you can make an improvement.
 Loaded Ghost decoding/encoding allow for quick text-/table file saving and editing and lets the user steer the character with these. 
